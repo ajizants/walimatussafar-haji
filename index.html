@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Walimatussafar Haji — Bapak Sunaryo & Ibu Mujiati</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Scripts -->
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    <style>
+        :root {
+            --gold: #C9A84C;
+            --gold-lt: #E8D08A;
+            --gold-dk: #8B6914;
+            --navy: #0B1C2E;
+            --navy-md: #132A45;
+            --cream: #FDF8EE;
+            --white: #FFFFFF;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        body.lock {
+            overflow: hidden;
+        }
+
+        /* ═══════════════════════════════════
+       OPENING SCREEN
+    ═══════════════════════════════════ */
+        #opening {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            background:
+                radial-gradient(ellipse at 60% 20%, rgba(201, 168, 76, .18) 0%, transparent 55%),
+                radial-gradient(ellipse at 20% 80%, rgba(201, 168, 76, .10) 0%, transparent 45%),
+                linear-gradient(160deg, #0a1929 0%, #0f2744 50%, #0a1929 100%);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        #opening.hide {
+            opacity: 0;
+            transform: scale(1.04);
+            pointer-events: none;
+        }
+
+        /* Canvas star field - rendered by JS */
+        #starCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Decorative arched border */
+        .opening-frame {
+            position: relative;
+            border: 1px solid rgba(201, 168, 76, .35);
+            border-radius: 200px 200px 16px 16px;
+            padding: 50px 40px 40px;
+            max-width: 420px;
+            width: 100%;
+            background: rgba(11, 28, 46, .55);
+            backdrop-filter: blur(14px);
+            box-shadow:
+                0 0 0 1px rgba(201, 168, 76, .12),
+                0 30px 80px rgba(0, 0, 0, .55),
+                inset 0 1px 0 rgba(255, 255, 255, .06);
+            z-index: 2;
+        }
+
+        .opening-frame::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 60px;
+            border: 1px solid rgba(201, 168, 76, .35);
+            border-bottom: none;
+            border-radius: 80px 80px 0 0;
+            background: rgba(11, 28, 46, .55);
+        }
+
+        /* Crescent + star SVG icon */
+        .opening-photo {
+            display: block;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 18px;
+            border: 2px solid rgba(201, 168, 76, .5);
+            box-shadow:
+                0 0 0 4px rgba(201, 168, 76, .12),
+                0 8px 24px rgba(0, 0, 0, .45);
+            animation: floatIcon 5s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .opening-bismillah {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            color: var(--gold-lt);
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .opening-divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            margin: 0 auto 18px;
+        }
+
+        .opening-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(22px, 5vw, 30px);
+            font-weight: 600;
+            color: var(--gold-lt);
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .opening-names {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            color: var(--white);
+            opacity: .85;
+            margin-bottom: 6px;
+        }
+
+        #guest-label {
+            font-size: 13px;
+            color: rgba(232, 208, 138, .7);
+            letter-spacing: .5px;
+            min-height: 18px;
+            margin-bottom: 28px;
+        }
+
+        .btn-open {
+            padding: 13px 34px;
+            background: linear-gradient(135deg, var(--gold) 0%, #a07830 100%);
+            color: var(--navy);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 28px rgba(201, 168, 76, .35);
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        .btn-open:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 36px rgba(201, 168, 76, .5);
+        }
+
+        /* ═══════════════════════════════════
+       GLOBAL CANVAS STARS (behind content)
+    ═══════════════════════════════════ */
+        #bgCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ═══════════════════════════════════
+       HERO
+    ═══════════════════════════════════ */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero-bg {
+            position: absolute;
+            margin-top: -3rem;
+            inset: 0;
+            background:
+                url('https://i.pinimg.com/1200x/77/c3/b8/77c3b8d1e916928d3aed78c2377ce19a.jpg') center/cover no-repeat;
+            transform: scale(1.05);
+            transition: transform .1s linear;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to bottom, rgba(11, 28, 46, .75) 0%, rgba(11, 28, 46, .55) 50%, rgba(11, 28, 46, .95) 100%),
+                radial-gradient(ellipse at center, rgba(201, 168, 76, .12) 0%, transparent 65%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: floatHero 7s ease-in-out infinite;
+            padding: 0 20px;
+        }
+
+        @keyframes floatHero {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-14px);
+            }
+        }
+
+        .hero-bismillah {
+            font-family: 'Amiri', serif;
+            font-size: clamp(18px, 3vw, 26px);
+            color: var(--gold-lt);
+            text-shadow: 0 0 20px rgba(201, 168, 76, .6);
+            margin-bottom: 16px;
+        }
+
+        .hero-ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            opacity: .6;
+        }
+
+        .hero-ornament span {
+            display: block;
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(to right, transparent, var(--gold));
+        }
+
+        .hero-ornament span:last-child {
+            background: linear-gradient(to left, transparent, var(--gold));
+        }
+
+        .hero-ornament i {
+            color: var(--gold);
+            font-size: 12px;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(42px, 9vw, 82px);
+            font-weight: 600;
+            color: var(--cream);
+            letter-spacing: 1px;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, .5);
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold-lt);
+        }
+
+        .hero p {
+            font-size: clamp(13px, 2vw, 16px);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(253, 248, 238, .75);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: .5;
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+
+        .hero-scroll span {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-scroll i {
+            font-size: 12px;
+        }
+
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(8px);
+            }
+        }
+
+        /* ═══════════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════════ */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        /* Section reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity .8s ease, transform .8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── Card ─── */
+        .card {
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(201, 168, 76, .18);
+            border-radius: 24px;
+            padding: 48px 40px;
+            margin-top: 60px;
+            box-shadow:
+                0 40px 80px rgba(0, 0, 0, .35),
+                inset 0 1px 0 rgba(255, 255, 255, .06);
+            backdrop-filter: blur(12px);
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 34px 22px;
+                margin-top: 36px;
+            }
+        }
+
+        /* ─── Section titles ─── */
+        .sec-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .sec-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(26px, 5vw, 38px);
+            font-weight: 600;
+            color: var(--cream);
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .gold-line {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(to right, var(--gold), var(--gold-lt));
+            margin-bottom: 24px;
+        }
+
+        /* ─── Opening greeting ─── */
+        .greeting {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .greeting .arabic-big {
+            font-family: 'Amiri', serif;
+            font-size: 28px;
+            color: var(--gold-lt);
+            margin-bottom: 10px;
+        }
+
+        .greeting p {
+            font-size: 14px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, .78);
+        }
+
+        /* ─── Names ─── */
+        .names-block {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid rgba(201, 168, 76, .15);
+            border-bottom: 1px solid rgba(201, 168, 76, .15);
+            margin: 30px 0;
+        }
+
+        .names-block .name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(26px, 6vw, 40px);
+            font-weight: 600;
+            color: var(--gold-lt);
+            letter-spacing: 1px;
+        }
+
+        .names-block .ampersand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            color: rgba(201, 168, 76, .5);
+            margin: 8px 0;
+            display: block;
+        }
+
+        /* ─── Ayat ─── */
+        .ayat-block {
+            background: rgba(201, 168, 76, .05);
+            border-left: 3px solid var(--gold);
+            border-radius: 0 16px 16px 0;
+            padding: 26px 28px;
+            margin: 30px 0;
+        }
+
+        .ayat-block .arabic {
+            font-family: 'Amiri', serif;
+            font-size: clamp(18px, 4vw, 24px);
+            color: var(--gold-lt);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .ayat-block .terjemah {
+            font-size: 13px;
+            line-height: 1.85;
+            color: rgba(255, 255, 255, .72);
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        .ayat-block .ref {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+
+        /* ─── Countdown ─── */
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 30px 0;
+        }
+
+        .cd-box {
+            text-align: center;
+            padding: 18px 8px;
+            background: rgba(201, 168, 76, .07);
+            border: 1px solid rgba(201, 168, 76, .2);
+            border-radius: 16px;
+            transition: transform .3s;
+        }
+
+        .cd-box:hover {
+            transform: translateY(-4px);
+        }
+
+        .cd-box h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(26px, 5vw, 36px);
+            font-weight: 600;
+            color: var(--gold-lt);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .cd-box p {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .5);
+        }
+
+        /* ─── Detail ─── */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        @media (max-width: 480px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(201, 168, 76, .15);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .detail-item .di-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(201, 168, 76, .15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        .detail-item .di-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .45);
+            margin-bottom: 4px;
+        }
+
+        .detail-item .di-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            color: var(--cream);
+            line-height: 1.4;
+        }
+
+        /* ─── Map ─── */
+        .map-wrap {
+            margin: 28px 0;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(201, 168, 76, .2);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .4);
+        }
+
+        .map-wrap iframe {
+            display: block;
+            width: 100%;
+            height: 260px;
+            border: none;
+        }
+
+        /* ─── QR ─── */
+        .qr-wrap {
+            text-align: center;
+            margin: 28px 0;
+        }
+
+        .qr-wrap p {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .4);
+            margin-bottom: 14px;
+        }
+
+        .qr-wrap img {
+            width: 160px;
+            height: 160px;
+            border-radius: 16px;
+            border: 2px solid rgba(201, 168, 76, .3);
+            padding: 8px;
+            background: white;
+        }
+
+        /* ─── Closing ─── */
+        .closing {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(201, 168, 76, .15);
+            margin-top: 30px;
+        }
+
+        .closing p {
+            font-size: 14px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, .72);
+            font-style: italic;
+            margin-bottom: 18px;
+        }
+
+        .closing .salam {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            color: var(--cream);
+            font-style: normal;
+        }
+
+        /* ─── Islamic geometric border top ─── */
+        .geo-top {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: .5;
+        }
+
+        /* ═══════════════════════════════════
+       MUSIC BUTTON
+    ═══════════════════════════════════ */
+        #musicBtn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 500;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 168, 76, .4);
+            background: rgba(11, 28, 46, .8);
+            backdrop-filter: blur(10px);
+            color: var(--gold);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        #musicBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(201, 168, 76, .3);
+        }
+    </style>
+</head>
+
+<body class="lock">
+
+    <!-- Background star canvas (always visible behind content) -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- ══════════════════════════════
+       OPENING SCREEN
+  ══════════════════════════════ -->
+    <div id="opening">
+        <canvas id="starCanvas"></canvas>
+
+        <div class="opening-frame">
+            <!-- Crescent + Star SVG -->
+            {{-- <svg class="opening-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M32 8C21.5 8 13 16.5 13 27C13 37.5 21.5 46 32 46C37.2 46 41.9 43.8 45.2 40.2C43.6 40.7 41.8 41 40 41C30.6 41 23 33.4 23 24C23 17.1 27 11.1 32.8 8.3C32.5 8.1 32.3 8 32 8Z"
+                    fill="#C9A84C" />
+                <path d="M40 8L41.5 12H46L42.5 14.5L44 18.5L40 16L36 18.5L37.5 14.5L34 12H38.5Z" fill="#E8D08A" />
+            </svg> --}}
+            <img src="https://drive.kkpm.my.id/index.php/s/SdmNe7YcczxXEcM/download" class="opening-photo"
+                alt="Bapak Sunaryo & Ibu Mujiati" />
+
+            <div class="opening-bismillah">بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <div class="opening-divider"></div>
+            <div class="opening-title">Undangan<br>Walimatussafar Haji</div>
+            <div class="opening-names">Bapak Sunaryo &amp; Ibu Mujiati</div>
+            <div id="guest-label"></div>
+
+            <button class="btn-open" onclick="openInvite()">
+                <i class="fas fa-envelope-open-text" style="margin-right:8px;"></i>Buka Undangan
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO -->
+    <audio id="music" loop>
+        <source src="https://cdn.pixabay.com/audio/2026/01/18/audio_6640257fcd.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicBtn" onclick="toggleMusic()" title="Musik">
+        <i class="fas fa-music"></i>
+    </button>
+
+    <!-- ══════════════════════════════
+       HERO
+  ══════════════════════════════ -->
+    <section class="hero">
+        <div class="hero-bg" id="heroBg"></div>
+
+        <div class="hero-content">
+            <div class="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <div class="hero-ornament">
+                <span></span>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star" style="font-size:8px;opacity:.6;"></i>
+                <i class="fas fa-star"></i>
+                <span></span>
+            </div>
+            <h1>Walimatussafar<br><em>Haji</em></h1>
+            <p>Mengharap Ridha Allah dalam Perjalanan Suci ke Baitullah</p>
+        </div>
+
+        <div class="hero-scroll">
+            <span>Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════ -->
+    <main class="main">
+
+        <!-- Greeting card -->
+        <div class="card reveal">
+            <!-- Geo ornament top -->
+            <div class="mt-7 opacity-40 flex justify-center geo-top">
+                <svg width="180" height="24" viewBox="0 0 180 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="12" x2="60" y2="12" stroke="#C9A84C" stroke-width=".5"
+                        stroke-dasharray="4 3" />
+                    <polygon points="90,2 96,12 90,22 84,12" stroke="#C9A84C" stroke-width=".8" fill="none" />
+                    <circle cx="90" cy="12" r="3" fill="#C9A84C" opacity=".6" />
+                    <line x1="120" y1="12" x2="180" y2="12" stroke="#C9A84C" stroke-width=".5"
+                        stroke-dasharray="4 3" />
+                    <circle cx="62" cy="12" r="2" fill="#C9A84C" opacity=".5" />
+                    <circle cx="118" cy="12" r="2" fill="#C9A84C" opacity=".5" />
+                </svg>
+            </div>
+
+            <div class="greeting">
+                <div class="arabic-big">السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ</div>
+                <!-- Ayat -->
+                <div class="ayat-block reveal">
+                    <div class="arabic">
+                        وَلِلّٰهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ مَنِ اسْتَطَاعَ إِلَيْهِ سَبِيلًا
+                    </div>
+                    <div class="terjemah">
+                        "Dan (di antara) kewajiban manusia terhadap Allah adalah melaksanakan ibadah haji
+                        ke Baitullah, yaitu bagi orang-orang yang mampu mengadakan perjalanan ke sana."
+                    </div>
+                    <div class="ref">QS. Ali Imran : 97</div>
+                </div>
+                <p>
+                    Dengan memohon rahmat dan ridha Allah SWT, kami bermaksud menyelenggarakan
+                    Walimatussafar Haji sebagai ungkapan syukur dan memohon doa restu atas
+                    keberangkatan kami dalam menunaikan ibadah haji ke Baitullah.
+                </p>
+            </div>
+
+
+
+
+
+            <!-- Countdown -->
+            <div class="sec-label" style="text-align:center;margin-top:36px;">Menghitung Hari</div>
+            <div class="countdown reveal">
+                <div class="cd-box">
+                    <h2 id="d">00</h2>
+                    <p>Hari</p>
+                </div>
+                <div class="cd-box">
+                    <h2 id="h">00</h2>
+                    <p>Jam</p>
+                </div>
+                <div class="cd-box">
+                    <h2 id="m">00</h2>
+                    <p>Menit</p>
+                </div>
+                <div class="cd-box">
+                    <h2 id="s">00</h2>
+                    <p>Detik</p>
+                </div>
+            </div>
+
+            <!-- Detail -->
+            <div class="detail-grid reveal">
+                <div class="detail-item">
+                    <div class="di-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="di-label">Hari / Tanggal</div>
+                    <div class="di-value">Ahad, 10 Mei 2026</div>
+                </div>
+                <div class="detail-item">
+                    <div class="di-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="di-label">Lokasi</div>
+                    <div class="di-value">Desa Kedungreja RT 03 RW 06, Kedungreja, Cilacap</div>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="map-wrap reveal">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3955.6179511528308!2d108.77522607500214!3d-7.507358992505215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zN8KwMzAnMjYuNSJTIDEwOMKwNDYnNDAuMSJF!5e0!3m2!1sen!2sid!4v1777741244182!5m2!1sen!2sid"
+                    width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+
+            <!-- QR -->
+            <div class="mt-7 flex justify-center">
+                <div class="qr-wrap reveal">
+                    <p>Scan untuk lokasi</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://maps.app.goo.gl/drf7JZVJfvu6iuFs9"
+                        alt="QR Lokasi" />
+                </div>
+            </div>
+
+            <!-- Closing -->
+            <div class="closing reveal">
+                <p>
+                    Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila
+                    Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu
+                    dalam keberangkatan kami menuju Baitullah.
+                </p>
+                <div class="salam">Wassalamu'alaikum Warahmatullahi Wabarakatuh</div>
+                <div class="names-block reveal">
+                    <div class="name right-10">Bapak Sunaryo</div>
+                    <span class="ampersand">Beserta</span>
+                    <div class="name left-10">Ibu Mujiati</div>
+                </div>
+                <div class="mt-7 opacity-40 flex justify-center" style="margin-top:28px;opacity:.4;">
+                    <svg width="180" height="24" viewBox="0 0 180 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="12" x2="60" y2="12" stroke="#C9A84C"
+                            stroke-width=".5" stroke-dasharray="4 3" />
+                        <polygon points="90,2 96,12 90,22 84,12" stroke="#C9A84C" stroke-width=".8"
+                            fill="none" />
+                        <circle cx="90" cy="12" r="3" fill="#C9A84C" opacity=".6" />
+                        <line x1="120" y1="12" x2="180" y2="12" stroke="#C9A84C"
+                            stroke-width=".5" stroke-dasharray="4 3" />
+                        <circle cx="62" cy="12" r="2" fill="#C9A84C" opacity=".5" />
+                        <circle cx="118" cy="12" r="2" fill="#C9A84C" opacity=".5" />
+                    </svg>
+                </div>
+            </div>
+        </div><!-- /card -->
+
+    </main>
+
+    {{-- footer embed mitrahajatan copyright --}}
+    <footer class="footer">
+        <div class="footer-content" style="text-align: center; opacity:.5; margin-bottom: 12px; font-size: 10px;">
+            <p>&copy; {{ date('Y') }} <a href="https://mitrahajatan.com">mitrahajatan.com</a>. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ── Opening ──────────────────────────────────────────────
+        function openInvite() {
+            document.body.classList.remove('lock');
+
+            const op = document.getElementById('opening');
+            op.classList.add('hide');
+
+            setTimeout(() => {
+                op.style.display = 'none';
+
+                const music = document.getElementById('music');
+                music.volume = 0;
+                music.play().catch(() => {});
+
+                let vol = 0;
+                const fade = setInterval(() => {
+                    vol = Math.min(vol + 0.02, 0.4);
+                    music.volume = vol;
+                    if (vol >= 0.4) clearInterval(fade);
+                }, 100);
+
+                updateMusicBtn();
+            }, 650);
+        }
+
+        // ── Music ─────────────────────────────────────────────────
+        function toggleMusic() {
+            const m = document.getElementById('music');
+            m.paused ? m.play() : m.pause();
+            updateMusicBtn();
+        }
+
+        function updateMusicBtn() {
+            const m = document.getElementById('music');
+            const btn = document.getElementById('musicBtn');
+            btn.innerHTML = m.paused ?
+                '<i class="fas fa-music"></i>' :
+                '<i class="fas fa-pause"></i>';
+        }
+
+        // ── Countdown ─────────────────────────────────────────────
+        const target = new Date('May 10, 2026 00:00:00').getTime();
+
+        function tick() {
+            const diff = target - Date.now();
+            if (diff <= 0) {
+                ['d', 'h', 'm', 's'].forEach(id => document.getElementById(id).innerText = '00');
+                return;
+            }
+            document.getElementById('d').innerText = String(Math.floor(diff / 864e5)).padStart(2, '0');
+            document.getElementById('h').innerText = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
+            document.getElementById('m').innerText = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
+            document.getElementById('s').innerText = String(Math.floor((diff % 6e4) / 1e3)).padStart(2, '0');
+        }
+        tick();
+        setInterval(tick, 1000);
+
+        // ── Guest name ────────────────────────────────────────────
+        const nama = new URLSearchParams(window.location.search).get('to');
+        if (nama) document.getElementById('guest-label').textContent = 'Kepada Yth. ' + decodeURIComponent(nama);
+
+        // ── Scroll reveal ─────────────────────────────────────────
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) e.target.classList.add('visible');
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // ── Parallax hero ─────────────────────────────────────────
+        window.addEventListener('scroll', () => {
+            const y = window.scrollY;
+            const bg = document.getElementById('heroBg');
+            if (bg) bg.style.transform = `scale(1.05) translateY(${y * 0.25}px)`;
+        }, {
+            passive: true
+        });
+
+        // ── Star canvas (opening) ─────────────────────────────────
+        (function() {
+            const c = document.getElementById('starCanvas');
+            const ctx = c.getContext('2d');
+
+            function resize() {
+                c.width = c.offsetWidth;
+                c.height = c.offsetHeight;
+            }
+            resize();
+
+            const stars = Array.from({
+                length: 120
+            }, () => ({
+                x: Math.random(),
+                y: Math.random(),
+                r: Math.random() * 1.2 + 0.3,
+                a: Math.random(),
+                speed: Math.random() * 0.008 + 0.003,
+                phase: Math.random() * Math.PI * 2
+            }));
+
+            let frame = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                const t = frame * 0.02;
+                stars.forEach(s => {
+                    const alpha = 0.3 + 0.5 * Math.abs(Math.sin(t * s.speed * 40 + s.phase));
+                    ctx.beginPath();
+                    ctx.arc(s.x * c.width, s.y * c.height, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(232,208,138,${alpha})`;
+                    ctx.fill();
+                });
+                frame++;
+                requestAnimationFrame(draw);
+            }
+            draw();
+
+            window.addEventListener('resize', resize);
+        })();
+
+        // ── Star canvas (background page) ────────────────────────
+        (function() {
+            const c = document.getElementById('bgCanvas');
+            const ctx = c.getContext('2d');
+
+            function resize() {
+                c.width = window.innerWidth;
+                c.height = window.innerHeight;
+            }
+            resize();
+
+            const stars = Array.from({
+                length: 80
+            }, () => ({
+                x: Math.random(),
+                y: Math.random(),
+                r: Math.random() * 1 + 0.2,
+                phase: Math.random() * Math.PI * 2,
+                speed: Math.random() * 0.004 + 0.002
+            }));
+
+            let frame = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                const t = frame * 0.02;
+                stars.forEach(s => {
+                    const alpha = 0.12 + 0.2 * Math.abs(Math.sin(t * s.speed * 40 + s.phase));
+                    ctx.beginPath();
+                    ctx.arc(s.x * c.width, s.y * c.height, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(201,168,76,${alpha})`;
+                    ctx.fill();
+                });
+                frame++;
+                requestAnimationFrame(draw);
+            }
+            draw();
+
+            window.addEventListener('resize', () => {
+                resize();
+            }, {
+                passive: true
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
